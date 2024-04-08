@@ -1,12 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Home Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Czech National Library Extractor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Home Page!</h1>
-    <p>{{ message }}</p>
+    <div class="container">
+        <form action="/send" method="post" class="form">
+            <p class="instructions">
+                Navštivte webovou stránku <a href="https://www.nkp.cz" target="_blank">Národní knihovny ČR</a> a přejděte do sekce "Katalogy a databáze", následně vyberte "Online katalog NK ČR". Zadejte všechny požadované parametry a potvrďte výběr kliknutím na tlačítko OK. Zkopírujte odkaz z horního vyhledávacího pole a vložte jej do níže umístěného pole.
+            </p>
+            <label for="linkInput" class="form-label">Vložte link zde:</label>
+            <input type="text" id="linkInput" name="linkInput" placeholder="Vložte link..." class="input-field">
+            <p class="instructions">
+                Prosím, vložte svou e-mailovou adresu, na kterou Vám bude zaslán export z katalogu Národní knihovny. Upozorňujeme, že zpracování a odeslání exportu může trvat i několik minut.
+            </p>
+            <label for="linkInput" class="form-label">Vložte e-mail zde:</label>
+            <input type="email" id="linkInput" name="email" placeholder="Vložte e-mail..." class="input-field">
+            <p class="instructions">
+                Níže naleznete další dostupné možnosti pro export dat z katalogu Národní knihovny ČR. Můžete vybrat jednu či více možností dle vašich potřeb.
+            </p>
+            <div class='options-container'>
+                <div class='options-container-left'>
+                <input type="checkbox" id="checkButton" name="deduplication" class="check-button">
+                <label for="checkButton" class="check-label">Odstranění duplicit (Beta verze)</label>
+                </div>
+
+                <div class='options-container-right'>
+                    <label for="exportOptions" class="select-label">Formát exportu:</label>
+                    <select id="exportOptions" name="exportOptions" class="select-field">
+                        <option value="StripedCSV" selected>Základní CSV</option>
+                        <option value="FullCSV">Kompletní CSV</option>
+                        <option value="TXT">Textový soubor (TXT)</option>
+                        <option value="All">Všechny formáty</option>
+                    </select>
+                </div>
+            </div>
+            <div class='small-space'></div>
+            <button type="submit" class="submit-btn">Pokračovat</button>
+        </form>
+    </div>
 </body>
 </html>

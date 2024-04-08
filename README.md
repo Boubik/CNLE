@@ -18,6 +18,7 @@ The National Library Extractor is a Python project specifically designed for the
 1. Make virtual Python: `python -m venv venv`
 1. Use virtual Python: `source venv/bin/activate` for Unix like systems or `venv\Scripts\activate.bat` for Windows
 1. Install the required dependencies: `pip install -r requirements.txt`
+1. Setup mail with [guide](https://app.sendgrid.com/guide/integrate/langs/python)
 
 ## Features
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Czech National Library Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <p class="instructions">
+            {{data['message']}}
+        </p>
+        <p class="instructions">
+            {{data['link']}}
+        </p>
+        <p class="instructions">
+            {{data['email']}}
+        </p>
+        <p class="instructions">
+            {{data['resault']}}
+        </p>
+        <p class="instructions">
+            {{data['deduplication']}}
+        </p>
+        <p class="instructions">
+            {{data['exportOptions']}}
+        </p>
+        
+    </div>
+</body>
+</html>
