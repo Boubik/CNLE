@@ -2,7 +2,7 @@
 
 ## Description
 
-The National Library Extractor is a Python project specifically designed for the Czech National Library. It allows users to generate a CSV file containing information about books based on a search query provided through a link from the National Library. This project is useful for researchers, librarians, and anyone interested in accessing and organizing book data from the Czech National Library.
+The Czech National Library Extractor is a Python-based project tailored for extracting data from the Czech National Library's catalog. It enables users to generate a CSV file containing book information derived from a search query link provided by the National Library. This tool is particularly beneficial for researchers, librarians, and anyone interested in efficiently accessing and managing book data from the Czech National Library.
 
 ## Table of Contents
 
@@ -12,19 +12,70 @@ The National Library Extractor is a Python project specifically designed for the
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/Boubik/CNLE.git`
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Boubik/CNLE.git
+   ```
+
 1. Navigate to the project directory: `cd CNLE`
-1. Install the venv: `pip install virtualenv` for older then 3.6 Python version
+
+   ```bash
+   cd CNLE
+   ```
+
+1. If you are using Python 3.5 or older, install virtualenv:
+
+   ```bash
+   pip install virtualenv
+
+   ```
+
 1. Make virtual Python: `python -m venv venv`
+
+   ```bash
+    python -m venv venv  # For Python 3.6 and newer
+    # or
+    virtualenv venv      # For Python 3.5 and older
+   ```
+
 1. Use virtual Python: `source venv/bin/activate` for Unix like systems or `venv\Scripts\activate.bat` for Windows
+
+    - For Unix-like systems:
+
+        ```bash
+        source venv/bin/activate
+        ```
+
+    - For Windows:
+
+        ```powershell
+        venv\Scripts\activate.bat
+        ```
+
 1. Install the required dependencies: `pip install -r requirements.txt`
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
 1. Setup mail with [guide](https://app.sendgrid.com/guide/integrate/langs/python)
+1. Ensure the SendGrid API key is stored in sendgrid.env, containing only the key without additional text.
+1. Run the project: `python app.py`
+
+   ```bash
+   python app.py
+   ```
+
+1. Connects to localhost on the port 5000: [http://localhost:5000](http://localhost:5000)
 
 ## Features
 
-- Extract data from the Czech National Library
-- Save data to a CSV file
-- Deduplication (beta feature)
+- Extracts data from the Czech National Library.
+- Saves data to a CSV file.
+- Deduplication system (currently in beta).
+- Hosted on [cnle.boubik.cz](cnle.boubik.cz), making it accessible as a web service.
+- Sends extracted data directly to your email.
 
 ## License
 
