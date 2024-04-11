@@ -1,26 +1,44 @@
-from functions import loadAllData, saveData, PrepareData
+import subprocess
+from flask import Flask, render_template, request, redirect, url_for
+import os
 
-deduplicate = False
-url = "https://aleph.nkp.cz/F/6ACPY7ICL1CMUCTN8C2M9JFLY879P1XVVG4UD83BE9YQ3UJJH2-11132?func=find-b&find_code=WRD&x=22&y=12&request=Matematika&filter_code_1=WTP&filter_request_1=BK&filter_code_2=WLN&filter_request_2=cze&adjacent=N"
-csv_file = open('output.csv', 'w', newline='')
-csv_full_file = open('output_full.csv', 'w', newline='')
-txt_file = open('output.txt', 'w', newline='')
 
-# get all data posible
-data = loadAllData(url, csv_file, csv_full_file)
-print("\nAll data loaded\n\n")
+# Create folders if they don't exist
+folders = ['tmp', 
+           'tmp/count', 
+           'tmp/data']
 
+for folder in folders:
+    os.makedirs(folder, exist_ok=True)
     
-# remove duplicates
-newData = {}
-for url, html in data.items():
-    newData = PrepareData(newData, html, url, deduplicate)
-print("\nAll data deduplicated\n\n")
+# Check if the file exists
+if not os.path.isfile('sendgrid.env'):
+    print("File 'sendgrid.env' does not exist. Exiting...")
+    exit()
 
-# save data
-for url, data in newData.items():
-    saveData(data, csv_file, csv_full_file, txt_file)
-print("\nAll data saved\n\n")
-    
-# Show some stats
-print(f"Count of data: {len(newData)}")
+app = Flask(__name__)
+
+# Home page route
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+# send route
+@app.route('/send', methods=['POST'])
+def sendPage():
+    # Retrieve the data from the form
+    data = {}
+    data['link'] = request.form['linkInput']
+    data['email'] = request.form['email']
+    if 'deduplication' in request.form:
+        data['deduplication'] = request.form['deduplication']
+    else:
+        data['deduplication'] = "off"
+    data['exportOptions'] = request.form['exportOptions']
+    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['email'], data['deduplication'], data['exportOptions']]
+    # Start the subprocess with nohup
+    subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    return render_template('send.html', data=data)
+
+if __name__ == "__main__":
+    app.run(debug=True)

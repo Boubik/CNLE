@@ -1,6 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from bs4 import BeautifulSoup
+import base64
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
 def getHtmlFromInternet(url):
     # Define the Chrome webdriver options
@@ -24,7 +27,7 @@ def getHtmlFromInternet(url):
     # Get HTML from URL using Selenium
     return driver.page_source
 
-def PrepareData(newData, html, url, deduplicate):
+def PrepareData(log, newData, html, url, deduplicate):
     # Filter HTML
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -33,7 +36,8 @@ def PrepareData(newData, html, url, deduplicate):
     try:
         tableRows = table.find_all('tr')
     except AttributeError:
-        print('Error did not find tableRows: ' + str(url))
+        # write to log
+        log.write('Error did not find tableRows: ' + str(url) + '\n')
         return newData
     
 
@@ -47,10 +51,11 @@ def PrepareData(newData, html, url, deduplicate):
         else:
             i += 1
         
-        if deduplicate:
+        if deduplicate == "on":
             for key, inDbData in newData.items():
                 if inDbData[2] == cells[2].text and inDbData[3] == cells[3].text and inDbData[4] == cells[4].text and inDbData[5] == cells[5].text and inDbData[6] == cells[6].text and inDbData[7] == cells[7].text:
-                    print('Alredy in: ' + str(cells[2].text) + '; ' + str(cells[3].text) + '; ' + str(cells[4].text) + '; ' + str(cells[5].text) + '; ' + str(cells[6].text) + '; ' + str(cells[7].text))
+                    # write to log
+                    log.write('Alredy in: ' + str(cells[2].text) + '; ' + str(cells[3].text) + '; ' + str(cells[4].text) + '; ' + str(cells[5].text) + '; ' + str(cells[6].text) + '; ' + str(cells[7].text) + '\n')
                     alredyIn = True
                     break
                 
@@ -82,7 +87,7 @@ def getAllSorts(html):
         url.append(newurl['href'])
     return url
 
-def loadAllData(url, csv_file, csv_full_file):            
+def loadAllData(url, log, csv_file, csv_full_file):            
 
     data = {}
     html = getHtmlFromInternet(url)
@@ -101,18 +106,21 @@ def loadAllData(url, csv_file, csv_full_file):
         
         
     filters = getAllSorts(html)
-    print(f"Max Filters: {len(filters)}")
+    # write to log
+    log.write(f"Max Filters: {len(filters)}\n")
     k = 1
     for filterUrl in filters:
         print("")
         html = getHtmlFromInternet(filterUrl)
         soup = BeautifulSoup(html, 'html.parser')
-        print(f"Filter {k} of {len(filters)}")
+        # write to log
+        log.write(f"Filter {k} of {len(filters)}\n")
         try:
             url = soup.find('a', title='Next')['href'][:-6]
             for i in range(1, maxCount + 1, 10):
                 html = getHtmlFromInternet(url + str(i).zfill(6))
-                print(f"URL: {url + str(i).zfill(6)}")
+                # write to log
+                log.write(f"URL: {url + str(i).zfill(6)}\n")
                 soup = BeautifulSoup(html, 'html.parser')
                 data[url + str(i).zfill(6)] = html
         except TypeError:
@@ -121,3 +129,48 @@ def loadAllData(url, csv_file, csv_full_file):
         
         
     return data
+
+def sendMail(log, email, full_path, file_name, file_type):
+    with open('sendgrid.env', 'r') as file:
+        sendGridApiKey = file.read().strip()
+    message = Mail(
+        from_email='cnle@boubik.cz',
+        to_emails=email,
+        subject='CNLE - Potvrzení přijetí vašich dat',
+        html_content='<p>Dobrý den,<br><br>Vaše data byla úspěšně přijata a jsou přiložena k tomuto e-mailu.<br><br>S pozdravem,<br>Czech National Library Extractor</p>')
+
+    with open(full_path, 'rb') as f:
+        data = f.read()
+        f.close()
+    encoded_file = base64.b64encode(data).decode()
+    
+    attachedFile = Attachment(
+    FileContent(encoded_file),
+    FileName(file_name),
+    FileType(file_type),
+    Disposition('attachment')
+    )
+    message.attachment = attachedFile
+    
+    try:
+        sg = SendGridAPIClient(sendGridApiKey)
+        response = sg.send(message)
+        log.write(f"\n{response.status_code}\n")
+        log.write(f"{response.body}\n")
+        log.write(f"{response.headers}\n")
+    except Exception as e:
+        print(e.message)
+        log.write(f"\n{e.message}\n")
+        try:
+            message = Mail(
+                from_email='cnle@boubik.cz',
+                to_emails='cboubik@gmail.com',
+                subject='CNLE - Chyba při zpracování dat',
+                html_content='<p>Dobrý den,<br><br>omlouváme se, ale nepodařilo se nám získat data z NKP. Prosím, zkuste zadat údaje znovu.<br><br>S pozdravem,<br>Czech National Library Extractor</p>')
+        
+            sg = SendGridAPIClient(sendGridApiKey)
+            response = sg.send(message)
+        
+        except Exception as e:
+            print(e.message)
+            log.write(f"\n{e.message}\n")

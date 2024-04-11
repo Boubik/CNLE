@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Czech National Library Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <p class="instructions">
+            Vaše žádost byla úspěšně odeslána. Informace budou zaslány na e-mailovou adresu {{data['email']}}. Proces zpracování může trvat několik minut. Pokud do 15-20 minut nic nepřijde, zkontrolujte prosím složku s nevyžádanou poštou (spam) ve vaší e-mailové schránce. Děkujeme za vaši trpělivost.
+        </p>
+        <p class="backButton">
+            <a href="/"><button>Zpět na domovskou stránku</button></a>
+        </p>
+    </div>
+</body>
+</html>
