@@ -9,24 +9,11 @@
 <body>
     <div class="container">
         <p class="instructions">
-            {{data['message']}}
+            Vaše žádost byla úspěšně odeslána. Informace budou zaslány na e-mailovou adresu {{data['email']}}. Proces zpracování může trvat několik minut. Pokud do 10 minut nic nepřijde, zkontrolujte prosím složku s nevyžádanou poštou (spam) ve vaší e-mailové schránce. Děkujeme za vaši trpělivost.
         </p>
-        <p class="instructions">
-            {{data['link']}}
+        <p class="backButton">
+            <a href="/"><button>Zpět na domovskou stránku</button></a>
         </p>
-        <p class="instructions">
-            {{data['email']}}
-        </p>
-        <p class="instructions">
-            {{data['resault']}}
-        </p>
-        <p class="instructions">
-            {{data['deduplication']}}
-        </p>
-        <p class="instructions">
-            {{data['exportOptions']}}
-        </p>
-        
     </div>
 </body>
 </html>

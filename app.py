@@ -1,13 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for
 import subprocess
+from flask import Flask, render_template, request, redirect, url_for
+import os
+
+
+# Create folders if they don't exist
+folders = ['tmp', 
+           'tmp/count', 
+           'tmp/data']
+
+for folder in folders:
+    os.makedirs(folder, exist_ok=True)
+    
+# Check if the file exists
+if not os.path.isfile('sendgrid.env'):
+    print("File 'sendgrid.env' does not exist. Exiting...")
+    exit()
 
 app = Flask(__name__)
 
 # Home page route
 @app.route('/')
 def home():
-    message = "Here's a message passed from the Flask route to this home template."
-    return render_template('home.html', message=message)
+    return render_template('home.html')
 
 # send route
 @app.route('/send', methods=['POST'])
@@ -16,15 +30,14 @@ def sendPage():
     data = {}
     data['link'] = request.form['linkInput']
     data['email'] = request.form['email']
-    data['deduplication'] = request.form['deduplication']
+    if 'deduplication' in request.form:
+        data['deduplication'] = request.form['deduplication']
+    else:
+        data['deduplication'] = "off"
     data['exportOptions'] = request.form['exportOptions']
-    data['message'] = f"Vaše žádost byla úspěšně odeslána. Informace budou zaslány na e-mailovou adresu ({data['email']}). Proces zpracování může trvat několik minut. Děkujeme za vaši trpělivost."
-    # Assuming you want to pass two parameters: 'param1' and 'param2'
-    command = ["nohup", "venv/bin/python3", "test.py", data['link'], data['email'], data['deduplication'], data['exportOptions']]
+    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['email'], data['deduplication'], data['exportOptions']]
     # Start the subprocess with nohup
-    #subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    # Replace 'your_script.py' with the script you want to run, along with any necessary arguments
-    #data['resault'] = subprocess.run(["venv/bin/python3", "test.py", "param1", "param2"], capture_output=True, text=True)
+    subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     return render_template('send.html', data=data)
 
 if __name__ == "__main__":
