@@ -74,7 +74,7 @@ The Czech National Library Extractor is a Python-based project tailored for extr
 - Extracts data from the Czech National Library.
 - Saves data to a CSV file.
 - Deduplication system (currently in beta).
-- Hosted on [cnle.boubik.cz](cnle.boubik.cz), making it accessible as a web service.
+- Hosted on [cnle.boubik.cz](https://cnle.boubik.cz), making it accessible as a web service.
 - Sends extracted data directly to your email.
 
 ## License
