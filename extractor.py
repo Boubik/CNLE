@@ -47,7 +47,7 @@ log.write("\nAll data saved\n\n")
 csv_file.close()
 csv_full_file.close()
 txt_file.close()
-log.close()
+log.flush()
 
 # create a zip file
 with zipfile.ZipFile(folder_path + 'data.zip', 'w') as zip_file:
@@ -62,7 +62,6 @@ with zipfile.ZipFile(folder_path + 'data.zip', 'w') as zip_file:
         zip_file.write(folder_path + 'log.log', 'log.log')
 
 zip_file.close()
-log = open(folder_path + 'log.log', 'a', newline='')
 # write to log
 log.write("\nZip file created\n\n")
 
@@ -92,4 +91,5 @@ log.close()
 
 
 # Remove the folder and its contents
-shutil.rmtree(folder_path[:-1])
+if not debug:
+    shutil.rmtree(folder_path[:-1])
