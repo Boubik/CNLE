@@ -61,11 +61,11 @@ The Czech National Library Extractor is a Python-based project tailored for extr
 
 1. Setup mail with [guide](https://app.sendgrid.com/guide/integrate/langs/python)
 1. Ensure the SendGrid API key is stored in sendgrid.env, containing only the key without additional text.
-1. Run the project: `python app.py`
+1. Run the project:
 
-   ```bash
-   python app.py
-   ```
+      ```bash
+      python app.py
+      ```
 
 1. Connects to localhost on the port 5000: [http://localhost:5000](http://localhost:5000)
 

@@ -42,4 +42,4 @@ def sendPage():
     return render_template('send.html', data=data)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=bool(debug))
