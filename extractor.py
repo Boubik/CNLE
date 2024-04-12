@@ -91,4 +91,5 @@ log.close()
 
 
 # Remove the folder and its contents
-shutil.rmtree(folder_path[:-1])
+if not debug:
+    shutil.rmtree(folder_path[:-1])
