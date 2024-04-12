@@ -1,7 +1,8 @@
 import subprocess
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import os
 
+debug = 0
 
 # Create folders if they don't exist
 folders = ['tmp', 
@@ -35,7 +36,7 @@ def sendPage():
     else:
         data['deduplication'] = "off"
     data['exportOptions'] = request.form['exportOptions']
-    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['email'], data['deduplication'], data['exportOptions']]
+    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['email'], data['deduplication'], data['exportOptions'], str(debug)]
     # Start the subprocess with nohup
     subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     return render_template('send.html', data=data)

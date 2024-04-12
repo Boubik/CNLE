@@ -13,6 +13,7 @@ url = sys.argv[1]
 email = sys.argv[2]
 deduplicate = sys.argv[3]
 exportOptions = sys.argv[4]
+debug = bool(int(sys.argv[5]))
 # Generate random folder name
 folder_path = "tmp/data/" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=12)) + '/'
 os.makedirs(folder_path, exist_ok=True)
@@ -22,7 +23,7 @@ txt_file = open(folder_path + 'output.txt', 'w', newline='')
 log = open(folder_path + 'log.log', 'w', newline='')
 log.write(f"Started at: {start_time}\n")
 # write to log
-log.write(f"email: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\nurl: {url}\n\n")
+log.write(f"email: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 
 # get all data posible
 data = loadAllData(url, log, csv_file, csv_full_file)
@@ -42,6 +43,10 @@ for url, data in newData.items():
     saveData(data, csv_file, csv_full_file, txt_file)
 # write to log
 log.write("\nAll data saved\n\n")
+csv_file.close()
+csv_full_file.close()
+txt_file.close()
+log.close()
 
 # create a zip file
 with zipfile.ZipFile(folder_path + 'data.zip', 'w') as zip_file:
@@ -51,7 +56,12 @@ with zipfile.ZipFile(folder_path + 'data.zip', 'w') as zip_file:
     zip_file.write(folder_path + 'output_full.csv', 'output_full.csv')
     # add the txt file to the zip
     zip_file.write(folder_path + 'output.txt', 'output.txt')
+    # add the log file to the zip if debug is enabled
+    if debug:
+        zip_file.write(folder_path + 'log.log', 'log.log')
 
+zip_file.close()
+log = open(folder_path + 'log.log', 'a', newline='')
 # write to log
 log.write("\nZip file created\n\n")
 
@@ -77,10 +87,6 @@ end_time = time.time()
 execution_time = end_time - start_time
 log.write(f"\nScript execution time: {execution_time} seconds")
 
-csv_file.close()
-csv_full_file.close()
-txt_file.close()
-zip_file.close()
 log.close()
 
 
