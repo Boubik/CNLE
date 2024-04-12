@@ -6,6 +6,7 @@ import string
 import zipfile
 import shutil
 import time
+import datetime
 
 start_time = time.time()
 
@@ -21,7 +22,7 @@ csv_file = open(folder_path + 'output.csv', 'w', newline='')
 csv_full_file = open(folder_path + 'output_full.csv', 'w', newline='')
 txt_file = open(folder_path + 'output.txt', 'w', newline='')
 log = open(folder_path + 'log.log', 'w', newline='')
-log.write(f"Started at: {start_time}\n")
+log.write(f"Started at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 # write to log
 log.write(f"email: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 
