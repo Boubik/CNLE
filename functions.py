@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import base64
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
+import concurrent.futures
 
 def getHtmlFromInternet(url):
     # Define the Chrome webdriver options
@@ -87,7 +88,7 @@ def getAllSorts(html):
         url.append(newurl['href'])
     return url
 
-def loadAllData(url, log, csv_file, csv_full_file):            
+def loadAllData(url, log, csv_file, csv_full_file):
 
     data = {}
     html = getHtmlFromInternet(url)
@@ -126,9 +127,73 @@ def loadAllData(url, log, csv_file, csv_full_file):
         except TypeError:
             url = None
         k+=1
-        
-        
     return data
+
+def loadAllDataMulti(url, log, csv_file, csv_full_file):
+
+    data = {}
+    html = getHtmlFromInternet(url)
+    soup = BeautifulSoup(html, 'html.parser')
+    maxCount = int(soup.find('td', class_="title", id="bold", width="25%", nowrap="").text.split(' z ')[-1])
+    if maxCount > 2500:
+        maxCount = 2499
+        
+    
+    table = soup.find('table', id='short_table', cellspacing='2', border='0', width='100%')
+    tableLegends = table.find('tr').find_all('th', class_='text3')
+    csv_file.write(f"{tableLegends[2].text};{tableLegends[3].text};{tableLegends[4].text};{tableLegends[5].text};\n")
+    for cell in tableLegends:
+        csv_full_file.write(cell.text + ';')
+    csv_full_file.write('\n')
+        
+        
+    filters = getAllSorts(html)
+    # write to log
+    log.write(f"Max Filters: {len(filters)}\n")
+        
+    # Using ThreadPoolExecutor to execute the function in parallel
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Map each filterUrl in filters to the getHtmlByFilter function call
+        # Assign a unique k value to each call using enumerate
+        future_to_url = {executor.submit(getHtmlByFilter, filterUrl, log, k+1, maxCount): filterUrl for k, filterUrl in enumerate(filters)}
+
+        # Dictionary to store the combined results from all URLs
+        combined_results = {}
+
+        # Collecting results
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                data = future.result()  # This will be the dictionary returned by getHtmlByFilter
+                combined_results.update(data)  # Merge the dictionary into the combined_results
+                print(f"Data received from {url}: {data}")
+            except Exception as exc:
+                print(f'{url} generated an exception: {exc}')
+            
+            
+    return combined_results
+
+def getHtmlByFilter(filterUrl, log, k, maxCount):
+    data = {}
+    print("")
+    html = getHtmlFromInternet(filterUrl)
+    soup = BeautifulSoup(html, 'html.parser')
+    # write to log
+    log.write(f"Filter {k} started\n")
+    try:
+        url = soup.find('a', title='Next')['href'][:-6]
+        for i in range(1, maxCount + 1, 10):
+            html = getHtmlFromInternet(url + str(i).zfill(6))
+            # write to log
+            log.write(f"URL: {url + str(i).zfill(6)}\n")
+            soup = BeautifulSoup(html, 'html.parser')
+            data[url + str(i).zfill(6)] = html
+    except TypeError:
+        url = None
+    k+=1
+    
+    return data
+    
 
 def sendMail(log, email, full_path, file_name, file_type):
     with open('sendgrid.env', 'r') as file:

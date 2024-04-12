@@ -1,5 +1,5 @@
 import os
-from functions import loadAllData, saveData, PrepareData, sendMail
+from functions import loadAllDataMulti, saveData, PrepareData, sendMail
 import sys
 import random
 import string
@@ -27,7 +27,7 @@ log.write(f"Started at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\
 log.write(f"email: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 
 # get all data posible
-data = loadAllData(url, log, csv_file, csv_full_file)
+data = loadAllDataMulti(url, log, csv_file, csv_full_file)
 # write to log
 log.write("All data loaded\n\n")
 
