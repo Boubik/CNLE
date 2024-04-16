@@ -4,6 +4,12 @@ from bs4 import BeautifulSoup
 import base64
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+from config import get_config
 
 def getHtmlFromInternet(url):
     # Define the Chrome webdriver options
@@ -131,6 +137,60 @@ def loadAllData(url, log, csv_file, csv_full_file):
     return data
 
 def sendMail(log, email, full_path, file_name, file_type):
+    config = get_config()
+    # Email settings
+    smtp_server = config["server"]
+    smtp_port = config["port"]
+    username = config["username"]
+    password = config["password"]
+    
+    # Email content
+    sender_email = username
+    subject = 'CNLE - Potvrzení přijetí vašich dat'
+    body = 'Dobrý den,\r\n\r\nVaše data byla úspěšně přijata a jsou přiložena k tomuto e-mailu.\r\n\r\nS pozdravem,\r\nCzech National Library Extractor'
+    
+    # Create MIME multipart message
+    message = MIMEMultipart()
+    message['From'] = sender_email
+    message['To'] = email
+    message['Subject'] = subject
+
+    # Attach the email body
+    message.attach(MIMEText(body, 'plain'))
+
+    # Open the file in binary mode
+    with open(full_path, "rb") as attachment:
+        # Create a MIMEBase instance
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+
+    # Encode file in ASCII characters to send by email    
+    encoders.encode_base64(part)
+
+    # Add header as key/value pair to attachment part
+    part.add_header(
+        'Content-Disposition',
+        f'attachment; filename= {file_name}',
+    )
+    
+    # Attach the file to the message
+    message.attach(part)
+
+    # Send the email
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()  # Secure the connection
+        server.login(username, password)
+        text = message.as_string()
+        server.sendmail(sender_email, email, text)
+        server.quit()
+        print("Email sent successfully!")
+        log.write("\nEmail sent successfully\n")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        log.write(f"\nFailed to send email: {e.message}\n")
+
+def sendMailOld(log, email, full_path, file_name, file_type):
     with open('sendgrid.env', 'r') as file:
         sendGridApiKey = file.read().strip()
     message = Mail(
