@@ -147,7 +147,7 @@ def sendMail(log, email, full_path, file_name, file_type):
     # Email content
     sender_email = username
     subject = 'CNLE - Potvrzení přijetí vašich dat'
-    body = 'Dobrý den,\r\n\r\nVaše data byla úspěšně přijata a jsou přiložena k tomuto e-mailu.\r\n\r\nS pozdravem,\r\nCzech National Library Extractor'
+    body = 'Dobrý den,\r\n\nVaše data byla úspěšně přijata a jsou přiložena k tomuto e-mailu.\r\n\nS pozdravem,\nCzech National Library Extractor'
     
     # Create MIME multipart message
     message = MIMEMultipart()
