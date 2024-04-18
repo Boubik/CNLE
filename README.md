@@ -59,9 +59,8 @@ The Czech National Library Extractor is a Python-based project tailored for extr
     pip install -r requirements.txt
     ```
 
-1. Setup mail with SMTP server:
-   - Copy the example configuration file: `cp config.py.example config.py`
-   - Open the `config.py` file and set all needed parameters:
+1. Setup all needed information in the configuration file: `config.py`
+
 1. Run the project:
 
       ```bash
