@@ -108,6 +108,10 @@ def loadAllData(url, log, csv_file, csv_full_file):
         filterUrl = filters[filterId]
         print("")
         html = getHtmlFromInternet(filterUrl)
+        if errorCode(html):
+            # write to log
+            log.write(f"Error code: {html}\n")
+            continue
         soup = BeautifulSoup(html, 'html.parser')
         # write to log
         log.write(f"Filter {filterId+1} of {len(filters)}\n")
@@ -125,6 +129,14 @@ def loadAllData(url, log, csv_file, csv_full_file):
         
         
     return data
+
+def errorCode(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    error = soup.find('h1', text='Error 403 Forbidden')
+    if error is None:
+        return False
+    else:
+        return True
 
 def sendMail(log, email, full_path, file_name, file_type):
     config = get_config()
@@ -180,7 +192,7 @@ def sendMail(log, email, full_path, file_name, file_type):
         print(f"Failed to send email: {e}")
         log.write(f"\nFailed to send email: {e.message}\n")
 
-def sendMailOld(log, email, full_path, file_name, file_type):
+def sendMailSendGrid(log, email, full_path, file_name, file_type):
     with open('sendgrid.env', 'r') as file:
         sendGridApiKey = file.read().strip()
     message = Mail(
