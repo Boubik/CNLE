@@ -1,7 +1,8 @@
 def get_config():
     return {
         # General settings
-        "local": True,  # Set to True if you want to load data without sending it (Local mode); all settings below will be ignored if this is set to True
+        "debug": False,  # Set to True if you want to see debug messages
+        "local": True,  # Set to True if you want to load data without sending it (Local mode); all settings below (in Mail and Own section) will be ignored if this is set to True
 
         # Mail settings
         # There are two options: using your 'own' server, which will send the mail using the settings below via SMTP, or using 'sendgrid'.
