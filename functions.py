@@ -104,13 +104,13 @@ def loadAllData(url, log, csv_file, csv_full_file):
     # write to log
     log.write(f"Max Filters: {maxFilters}\n")
     
-    for i in range(0, maxFilters):
-        filterUrl = filters[i]
+    for filterId in range(0, maxFilters):
+        filterUrl = filters[filterId]
         print("")
         html = getHtmlFromInternet(filterUrl)
         soup = BeautifulSoup(html, 'html.parser')
         # write to log
-        log.write(f"Filter {k} of {len(filters)}\n")
+        log.write(f"Filter {filterId+1} of {len(filters)}\n")
         try:
             url = soup.find('a', title='Next')['href'][:-6]
             for i in range(1, maxCount + 1, 10):
@@ -121,7 +121,6 @@ def loadAllData(url, log, csv_file, csv_full_file):
                 data[url + str(i).zfill(6)] = html
         except TypeError:
             url = None
-        k+=1
         filters = getAllSorts(html)
         
         
