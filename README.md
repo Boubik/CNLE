@@ -61,11 +61,7 @@ The Czech National Library Extractor is a Python-based project tailored for extr
 
 1. Setup mail with SMTP server:
    - Copy the example configuration file: `cp config.py.example config.py`
-   - Open the `config.py` file and set the following parameters:
-     - `server`: SMTP server address
-     - `port`: SMTP server port
-     - `username`: SMTP server username
-     - `password`: SMTP server password
+   - Open the `config.py` file and set all needed parameters:
 1. Run the project:
 
       ```bash
