@@ -11,7 +11,17 @@ from email.mime.base import MIMEBase
 from email import encoders
 from config import get_config
 
-def getHtmlFromInternet(url):
+def getChrome():
+    options = webdriver.ChromeOptions() 
+    options.add_argument("--headless")
+    return Chrome(options=options)
+
+
+def getHtmlFromInternet(drriver, url):
+    drriver.get(url)
+    return drriver.page_source
+
+def getHtmlFromInternetOld(url):
     # Define the Chrome webdriver options
     options = webdriver.ChromeOptions() 
     options.add_argument("--headless") # Set the Chrome webdriver to run in headless mode for scalability
