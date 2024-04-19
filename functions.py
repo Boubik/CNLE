@@ -100,7 +100,10 @@ def loadAllData(url, log, csv_file, csv_full_file):
         
         
     filters = getAllSorts(html)
-    maxFilters = len(filters)
+    if maxCount < 2499:
+        maxfilters = 1
+    else:
+        maxFilters = len(filters)
     # write to log
     log.write(f"Max Filters: {maxFilters}\n")
     
