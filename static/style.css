@@ -98,6 +98,10 @@ body {
     justify-content: center;
 }
 
+.options-container-left{
+    justify-content: left;
+}
+
 .small-space {
     height: 20px;
 }
@@ -105,4 +109,8 @@ body {
 .backButton{
     display: flex;
     justify-content: center;
+}
+
+.hide {
+    display: none;
 }

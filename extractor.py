@@ -7,16 +7,24 @@ import zipfile
 import shutil
 import time
 import datetime
+from config import get_config
+
+config = get_config
 
 start_time = time.time()
 
+if not config["local"]:
+    email = sys.argv[2]
+else:
+    email = None
+    
 url = sys.argv[1]
-email = sys.argv[2]
 deduplicate = sys.argv[3]
 exportOptions = sys.argv[4]
-debug = bool(int(sys.argv[5]))
+debug = config["debug"]
+
 # Generate random folder name
-folder_path = "tmp/data/" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=12)) + '/'
+folder_path = "tmp/" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=12)) + '/'
 os.makedirs(folder_path, exist_ok=True)
 csv_file = open(folder_path + 'output.csv', 'w', newline='')
 csv_full_file = open(folder_path + 'output_full.csv', 'w', newline='')
@@ -24,7 +32,10 @@ txt_file = open(folder_path + 'output.txt', 'w', newline='')
 log = open(folder_path + 'log.log', 'w', newline='')
 log.write(f"Started at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 # write to log
-log.write(f"email: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
+if not config["local"]:
+    log.write(f"local: True\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
+else:
+    log.write(f"local: False\nemail: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 
 # get all data posible
 data = loadAllData(url, log, csv_file, csv_full_file)
@@ -80,8 +91,13 @@ else:
 
 
 # send mail
-sendMail(log, email, folder_path + file, file, file_type)
-log.write("\nMail sent\n\n")
+if config["local"]:
+    log.write("\nLocal mode enabled, skipping mail sending\n\n")
+    # move file to current working directory
+    shutil.move(folder_path + file, os.path.join(os.getcwd(), file))
+else:
+    sendMail(log, email, folder_path + file, file, file_type)
+    log.write("\nMail sent\n\n")
 
 end_time = time.time()
 execution_time = end_time - start_time

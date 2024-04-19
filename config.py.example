@@ -1,5 +1,16 @@
 def get_config():
     return {
+        # General settings
+        "debug": False,  # Set to True if you want to see debug messages
+        "local": True,  # Set to True if you want to load data without sending it (Local mode); all settings below (in Mail and Own section) will be ignored if this is set to True
+
+        # Mail settings
+        # There are two options: using your 'own' server, which will send the mail using the settings below via SMTP, or using 'sendgrid'.
+        # With SendGrid, you utilize their service for sending mail, but you need to create a file named 'sendgrid.env' and paste only the API key there.
+        # If you choose anything other than SMTP, the options below will be ignored.
+        "mailProvider": 'own',  # Set to True if you want to use a local SMTP server
+
+        # Own mail server settings
         "server": '127.0.0.1',  # Replace with your e-mail server's address
         "port": 587,  # Typically 587 for TLS
         "username": 'email@example.con',  # Your full email address
