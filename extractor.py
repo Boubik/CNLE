@@ -36,11 +36,13 @@ if not config["local"]:
     log.write(f"local: True\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 else:
     log.write(f"local: False\nemail: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
+log.flush()
 
 # get all data posible
 data = loadAllData(url, log, csv_file, csv_full_file)
 # write to log
 log.write("All data loaded\n\n")
+log.flush()
 
     
 # remove duplicates
@@ -49,6 +51,7 @@ for url, html in data.items():
     newData = PrepareData(log, newData, html, url, deduplicate)
 # write to log
 log.write("\nAll data deduplicated\n\n")
+log.flush()
 
 # save data
 for url, data in newData.items():
