@@ -17,9 +17,9 @@ def getChrome():
     return Chrome(options=options)
 
 
-def getHtmlFromInternet(drriver, url):
-    drriver.get(url)
-    return drriver.page_source
+def getHtmlFromInternet(driver, url):
+    driver.get(url)
+    return driver.page_source
 
 def PrepareData(log, newData, html, url, deduplicate):
     # Filter HTML
@@ -84,7 +84,8 @@ def getAllSorts(html):
 def loadAllData(url, log, csv_file, csv_full_file):            
 
     data = {}
-    html = getHtmlFromInternet(url)
+    driver = getChrome()
+    html = getHtmlFromInternet(driver, url)
     soup = BeautifulSoup(html, 'html.parser')
     maxCount = int(soup.find('td', class_="title", id="bold", width="25%", nowrap="").text.split(' z ')[-1])
     if maxCount > 2500:
@@ -101,7 +102,7 @@ def loadAllData(url, log, csv_file, csv_full_file):
         
     filters = getAllSorts(html)
     if maxCount < 2499:
-        maxfilters = 1
+        maxFilters = 1
     else:
         maxFilters = len(filters)
     # write to log
@@ -110,7 +111,7 @@ def loadAllData(url, log, csv_file, csv_full_file):
     for filterId in range(0, maxFilters):
         filterUrl = filters[filterId]
         print("")
-        html = getHtmlFromInternet(filterUrl)
+        html = getHtmlFromInternet(driver, filterUrl)
         if errorCode(html):
             # write to log
             log.write(f"Error code: {html}\n")
@@ -121,7 +122,7 @@ def loadAllData(url, log, csv_file, csv_full_file):
         try:
             url = soup.find('a', title='Next')['href'][:-6]
             for i in range(1, maxCount + 1, 10):
-                html = getHtmlFromInternet(url + str(i).zfill(6))
+                html = getHtmlFromInternet(driver, url + str(i).zfill(6))
                 # write to log
                 log.write(f"URL: {url + str(i).zfill(6)}\n")
                 soup = BeautifulSoup(html, 'html.parser')
