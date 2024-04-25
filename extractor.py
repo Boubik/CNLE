@@ -9,7 +9,7 @@ import time
 import datetime
 from config import get_config
 
-config = get_config
+config = get_config()
 
 start_time = time.time()
 
