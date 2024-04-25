@@ -81,7 +81,7 @@ def getAllSorts(html):
         url.append(newurl['href'])
     return url
 
-def loadAllData(url, log, csv_file, csv_full_file):            
+def loadAllData(url, log, csv_file, csv_full_file):
 
     data = {}
     driver = getChrome()
@@ -110,7 +110,6 @@ def loadAllData(url, log, csv_file, csv_full_file):
     
     for filterId in range(0, maxFilters):
         filterUrl = filters[filterId]
-        print("")
         html = getHtmlFromInternet(driver, filterUrl)
         if errorCode(html):
             # write to log
@@ -118,7 +117,7 @@ def loadAllData(url, log, csv_file, csv_full_file):
             continue
         soup = BeautifulSoup(html, 'html.parser')
         # write to log
-        log.write(f"Filter {filterId+1} of {len(filters)}\n")
+        log.write(f"Filter {filterId+1} of {maxFilters}\n")
         try:
             url = soup.find('a', title='Next')['href'][:-6]
             for i in range(1, maxCount + 1, 10):
