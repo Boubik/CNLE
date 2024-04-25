@@ -38,6 +38,7 @@ log.write(f"local: {config['local']}\nemail: {email}\ndeduplicate: {deduplicate}
 data = loadAllData(url, log, csv_file, csv_full_file)
 # write to log
 log.write("All data loaded\n\n")
+log.flush()
 
     
 # remove duplicates
@@ -46,6 +47,7 @@ for url, html in data.items():
     newData = PrepareData(log, newData, html, url, deduplicate)
 # write to log
 log.write("\nAll data deduplicated\n\n")
+log.flush()
 
 # save data
 for url, data in newData.items():

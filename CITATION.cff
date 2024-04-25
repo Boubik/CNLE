@@ -1,0 +1,25 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Czech National Library Extractor
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jan
+    family-names: Chloubik
+    email: chlouba@boubik.cz
+repository-code: 'https://github.com/Boubik/CNLE'
+url: 'https://cnle.boubik.cz'
+abstract: >-
+  The Czech National Library Extractor is a Python-based
+  project tailored for extracting data from the Czech
+  National Library's catalog. It enables users to generate a
+  CSV file containing book information derived from a search
+  query link provided by the National Library. This tool is
+  particularly beneficial for researchers, librarians, and
+  anyone interested in efficiently accessing and managing
+  book data from the Czech National Library.
+license: MIT
