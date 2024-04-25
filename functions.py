@@ -11,26 +11,14 @@ from email.mime.base import MIMEBase
 from email import encoders
 from config import get_config
 
-def getHtmlFromInternet(url):
-    # Define the Chrome webdriver options
+def getChrome():
     options = webdriver.ChromeOptions() 
-    options.add_argument("--headless") # Set the Chrome webdriver to run in headless mode for scalability
+    options.add_argument("--headless")
+    return Chrome(options=options)
 
-    # By default, Selenium waits for all resources to download before taking actions.
-    # However, we don't need it as the page is populated with dynamically generated JavaScript code.
-    #options.page_load_strategy = "none"
 
-    # Pass the defined options objects to initialize the web driver 
-    driver = Chrome(options=options) 
-    # Set an implicit wait of 5 seconds to allow time for elements to appear before throwing an exception
-    #driver.implicitly_wait(5)
-
+def getHtmlFromInternet(driver, url):
     driver.get(url)
-    #time.sleep(5)
-
-    # Print the value of the JavaScript variable
-
-    # Get HTML from URL using Selenium
     return driver.page_source
 
 def PrepareData(log, newData, html, url, deduplicate):
@@ -93,10 +81,11 @@ def getAllSorts(html):
         url.append(newurl['href'])
     return url
 
-def loadAllData(url, log, csv_file, csv_full_file):            
+def loadAllData(url, log, csv_file, csv_full_file):
 
     data = {}
-    html = getHtmlFromInternet(url)
+    driver = getChrome()
+    html = getHtmlFromInternet(driver, url)
     soup = BeautifulSoup(html, 'html.parser')
     maxCount = int(soup.find('td', class_="title", id="bold", width="25%", nowrap="").text.split(' z ')[-1])
     if maxCount > 2500:
@@ -112,29 +101,45 @@ def loadAllData(url, log, csv_file, csv_full_file):
         
         
     filters = getAllSorts(html)
+    if maxCount < 2499:
+        maxFilters = 1
+    else:
+        maxFilters = len(filters)
     # write to log
-    log.write(f"Max Filters: {len(filters)}\n")
-    k = 1
-    for filterUrl in filters:
-        print("")
-        html = getHtmlFromInternet(filterUrl)
+    log.write(f"Max Filters: {maxFilters}\n")
+    
+    for filterId in range(0, maxFilters):
+        filterUrl = filters[filterId]
+        html = getHtmlFromInternet(driver, filterUrl)
+        if errorCode(html):
+            # write to log
+            log.write(f"Error code: {html}\n")
+            continue
         soup = BeautifulSoup(html, 'html.parser')
         # write to log
-        log.write(f"Filter {k} of {len(filters)}\n")
+        log.write(f"Filter {filterId+1} of {maxFilters}\n")
         try:
             url = soup.find('a', title='Next')['href'][:-6]
             for i in range(1, maxCount + 1, 10):
-                html = getHtmlFromInternet(url + str(i).zfill(6))
+                html = getHtmlFromInternet(driver, url + str(i).zfill(6))
                 # write to log
                 log.write(f"URL: {url + str(i).zfill(6)}\n")
                 soup = BeautifulSoup(html, 'html.parser')
                 data[url + str(i).zfill(6)] = html
         except TypeError:
             url = None
-        k+=1
+        filters = getAllSorts(html)
         
         
     return data
+
+def errorCode(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    error = soup.find('h1', text='Error 403 Forbidden')
+    if error is None:
+        return False
+    else:
+        return True
 
 def sendMail(log, email, full_path, file_name, file_type):
     config = get_config()
@@ -190,7 +195,7 @@ def sendMail(log, email, full_path, file_name, file_type):
         print(f"Failed to send email: {e}")
         log.write(f"\nFailed to send email: {e.message}\n")
 
-def sendMailOld(log, email, full_path, file_name, file_type):
+def sendMailSendGrid(log, email, full_path, file_name, file_type):
     with open('sendgrid.env', 'r') as file:
         sendGridApiKey = file.read().strip()
     message = Mail(
