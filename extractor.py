@@ -12,16 +12,16 @@ from config import get_config
 config = get_config()
 
 start_time = time.time()
-
-if not config["local"]:
-    email = sys.argv[2]
-else:
-    email = None
     
 url = sys.argv[1]
-deduplicate = sys.argv[3]
-exportOptions = sys.argv[4]
+deduplicate = sys.argv[2]
+exportOptions = sys.argv[3]
 debug = config["debug"]
+
+if not config["local"]:
+    email = sys.argv[4]
+else:
+    email = None
 
 # Generate random folder name
 folder_path = "tmp/" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=12)) + '/'
@@ -32,10 +32,7 @@ txt_file = open(folder_path + 'output.txt', 'w', newline='')
 log = open(folder_path + 'log.log', 'w', newline='')
 log.write(f"Started at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 # write to log
-if not config["local"]:
-    log.write(f"local: True\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
-else:
-    log.write(f"local: False\nemail: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
+log.write(f"local: {config['local']}\nemail: {email}\ndeduplicate: {deduplicate}\npath: {folder_path}\nexportOption: {exportOptions}\ndebug: {debug}\nurl: {url}\n\n")
 
 # get all data posible
 data = loadAllData(url, log, csv_file, csv_full_file)
@@ -92,7 +89,7 @@ else:
 
 # send mail
 if config["local"]:
-    log.write("\nLocal mode enabled, skipping mail sending\n\n")
+    log.write("\nLocal mode enabled, skipping mail sending and movign file to script home folder\n\n")
     # move file to current working directory
     shutil.move(folder_path + file, os.path.join(os.getcwd(), file))
 else:

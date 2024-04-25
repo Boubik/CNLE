@@ -50,11 +50,11 @@ def sendPage():
             # Further checking if the content type is HTML
             if 'text/html' in content_type:
                 if config["local"]:
-                    data['message'] = f"Vaše žádost byla úspěšně odeslána. Informace budou uloženy v lokální složce ({os.getcwd()}). Proces zpracování může trvat několik minut (15-25 minut)."
+                    data['message'] = f"Vaše žádost byla úspěšně odeslána. Informace budou uloženy v lokální složce. Proces zpracování může trvat několik minut (15-25 minut)."
                     command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['deduplication'], data['exportOptions']]
                 else:
                     data['message'] = f"Vaše žádost byla úspěšně odeslána. Informace budou zaslány na e-mailovou adresu {request.form['email']}. Proces zpracování může trvat několik minut. Pokud do 15-25 minut nic nepřijde, zkontrolujte prosím složku s nevyžádanou poštou (spam) ve vaší e-mailové schránce. Děkujeme za vaši trpělivost."
-                    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], request.form['email'], data['deduplication'], data['exportOptions']]
+                    command = ["nohup", "venv/bin/python3", "extractor.py", data['link'], data['deduplication'], data['exportOptions'], request.form['email']]
                 # Start the subprocess with nohup
                 subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     except requests.exceptions.RequestException as e:
